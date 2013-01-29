@@ -21,6 +21,7 @@ import java.util.Calendar;
 import java.util.Random;
 
 
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -33,7 +34,7 @@ import android.widget.GridView;
 import android.widget.TextView;
 
 
-public class CalendarView extends Activity {
+public class CalendarView extends Activity implements OnClickListener, OnItemClickListener{
 
 	public Calendar month;
 	public CalendarAdapter adapter;
@@ -59,54 +60,30 @@ public class CalendarView extends Activity {
 	    title.setText(android.text.format.DateFormat.format("MMMM yyyy", month));
 	    
 	    TextView previous  = (TextView) findViewById(R.id.previous);
-	    previous.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if(month.get(Calendar.MONTH)== month.getActualMinimum(Calendar.MONTH)) {				
-					month.set((month.get(Calendar.YEAR)-1),month.getActualMaximum(Calendar.MONTH),1);
-				} else {
-					month.set(Calendar.MONTH,month.get(Calendar.MONTH)-1);
-				}
-				refreshCalendar();
-			}
-		});
+	    previous.setOnClickListener(this);
 	    
 	    TextView next  = (TextView) findViewById(R.id.next);
-	    next.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if(month.get(Calendar.MONTH)== month.getActualMaximum(Calendar.MONTH)) {				
-					month.set((month.get(Calendar.YEAR)+1),month.getActualMinimum(Calendar.MONTH),1);
-				} else {
-					month.set(Calendar.MONTH,month.get(Calendar.MONTH)+1);
-				}
-				refreshCalendar();
-				
-			}
-		});
+	    next.setOnClickListener(this);
 	    
-		gridview.setOnItemClickListener(new OnItemClickListener() {
-		    public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-		    	TextView date = (TextView)v.findViewById(R.id.date);
-		        if(date instanceof TextView && !date.getText().equals("")) {
-		        	
-		        	Intent intent = new Intent();
-		        	String day = date.getText().toString();
-		        	if(day.length()==1) {
-		        		day = "0"+day;
-		        	}
-		        	// return chosen date as string format 
-		        	intent.putExtra("date", android.text.format.DateFormat.format("yyyy-MM", month)+"-"+day);
-		        	setResult(RESULT_OK, intent);
-		        	finish();
-		        }
-		        
-		    }
-		});
+		gridview.setOnItemClickListener(this);
 	}
-	
+	@Override
+	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+    	TextView date = (TextView)v.findViewById(R.id.date);
+        if(date instanceof TextView && !date.getText().equals("")) {
+        	
+        	Intent intent = new Intent();
+        	String day = date.getText().toString();
+        	if(day.length()==1) {
+        		day = "0"+day;
+        	}
+        	// return chosen date as string format 
+        	intent.putExtra("date", android.text.format.DateFormat.format("yyyy-MM", month)+"-"+day);
+        	setResult(RESULT_OK, intent);
+        	finish();
+        }
+        
+    }
 	public void refreshCalendar()
 	{
 		TextView title  = (TextView) findViewById(R.id.title);
@@ -123,7 +100,32 @@ public class CalendarView extends Activity {
 		String[] dateArr = date.split("-"); // date format is yyyy-mm-dd
 		month.set(Integer.parseInt(dateArr[0]), Integer.parseInt(dateArr[1]), Integer.parseInt(dateArr[2]));
 	}
-	
+	@Override
+	public void onClick(View v) {
+		switch (v.getId())
+		{
+			case R.id.previous:
+				if(month.get(Calendar.MONTH)== month.getActualMinimum(Calendar.MONTH)) {				
+					month.set((month.get(Calendar.YEAR)-1),month.getActualMaximum(Calendar.MONTH),1);
+				} else {
+					month.set(Calendar.MONTH,month.get(Calendar.MONTH)-1);
+				}
+				refreshCalendar();
+			break;
+			case R.id.next:
+				if(month.get(Calendar.MONTH)== month.getActualMaximum(Calendar.MONTH)) {				
+					month.set((month.get(Calendar.YEAR)+1),month.getActualMinimum(Calendar.MONTH),1);
+				} else {
+					month.set(Calendar.MONTH,month.get(Calendar.MONTH)+1);
+				}
+				refreshCalendar();
+				
+				break;
+			default:
+				break;
+		}
+		
+	}
 	public Runnable calendarUpdater = new Runnable() {
 		
 		@Override
@@ -143,4 +145,6 @@ public class CalendarView extends Activity {
 			adapter.notifyDataSetChanged();
 		}
 	};
+
+
 }
