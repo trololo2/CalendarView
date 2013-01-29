@@ -59,7 +59,7 @@ public class CalendarViewSampleActivity extends Activity {
             	Toast.makeText(getApplicationContext(), data.getStringExtra("date"), Toast.LENGTH_SHORT).show();
             	String[] dateArr = data.getStringExtra("date").split("-");
             	DatePicker dp = (DatePicker)findViewById(R.id.datePicker1);
-            	dp.updateDate(Integer.parseInt(dateArr[0]), Integer.parseInt(dateArr[1]), Integer.parseInt(dateArr[2]));
+            	dp.updateDate(Integer.parseInt(dateArr[0]), Integer.parseInt(dateArr[1]) - 1, Integer.parseInt(dateArr[2]));
             }
 		}
 	}
